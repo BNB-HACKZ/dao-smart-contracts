@@ -36,9 +36,17 @@ contract CrossChainDAO is Governor, GovernorSettings, CrossChainGovernorCounting
 
 //The only difference between our cross-chain variant and the single-chain variant is that the cross-chain variant
 // must account for the collection phase and the votes that come with it
-IAxelarGasService public immutable gasService;
+    IAxelarGasService public immutable gasService;
 
-  constructor(IVotes _token, address _gateway, address _gasService, uint16[] memory _spokeChains)
+
+
+// Whether or not the DAO finished the collection phase. It would be more efficient to add Collection as a status
+// in the Governor interface, but that would require editing the source file. It is a bit out of scope to completely
+// refactor the OpenZeppelin governance contract for cross-chain action!
+    mapping(uint256 => bool) public collectionFinished;
+    mapping(uint256 => bool) public collectionStarted;
+ 
+    constructor(IVotes _token, address _gateway, address _gasService, uint16[] memory _spokeChains)
         Governor("CrossChainDAO")
         GovernorSettings(0 /* 0 block */, 30 /* 6 minutes */, 0)
         GovernorVotes(_token)
@@ -47,7 +55,7 @@ IAxelarGasService public immutable gasService;
     {
         gasService = IAxelarGasService(_gasService);
     }
-
+  
     function quorum(uint256 blockNumber) public pure override returns (uint256) {
         return 1e18;
     }
@@ -65,6 +73,55 @@ IAxelarGasService public immutable gasService;
     function proposalThreshold() public view override(Governor, GovernorSettings) returns (uint256) {
         return super.proposalThreshold();
     }
+
+    
+    //Implementing a Collection Phase
+//a new collection phase should be added in between the voting period and the proposal's execution. 
+//During this phase:
+//Execution must be postponed (execution must be disabled)
+//The hub chain must request voting data from the spoke chains
+//The spoke chain must subsequently send the voting data
+
+
+// function that checks whether or not that each of the spoke chains have sent in voting data before
+// a proposal is executed (which is found by checking initialized on a proposal on all chains)
+    function _beforeExecute(
+        uint256 _proposalId,
+        address[] memory _targets,
+        uint256[] memory _values,
+        bytes[] memory _calldatas,
+        bytes32 _descriptionHash
+    ) internal override {
+        finishCollectionPhase(_proposalId);
+
+        require(
+            collectionFinished[_proposalId],
+            "Collection phase for this proposal is unfinished!"
+        );
+
+        super._beforeExecute(_proposalId, _targets, _values, _calldatas, _descriptionHash);
+
+    }
+
+    //function that marks a collection phase as true if all of the spoke chains have 
+    //sent a cross-chain message back
+
+    function finishCollectionPhase(uint256 _proposalId) public {
+        bool phaseFinished = true;
+        //loop will only run as long as phaseFinished == true
+        for(uint16 i = 0; i < spokeChains.length && phaseFinished; i++) {
+            phaseFinished = phaseFinished && proposalIdToChainIdToSpokeVotes[_proposalId][spokeChains[i]].initialized;
+        }
+
+        collectionFinished[_proposalId] = phaseFinished; //this sets the collection of the proposalId on all chains as finished
+    }
+
+
+    // Requests the voting data from all of the spoke chains
+    //We can start by making a new public trustless function to begin the collection phase, similar to the execute function:
+
+
+    
 
      function sendMessage(
         string calldata _destinationChain,
@@ -85,13 +142,13 @@ IAxelarGasService public immutable gasService;
     }
 
     //This function will receive cross chain voting data, will come back to implement it
-    function _execute (
-        string calldata sourceChain,
-        string calldata sourceAddress,
-        bytes calldata _payload
-    ) internal override {
-        string memory message = abi.decode(_payload, (string));
-    }
+    // function _execute (
+    //     string calldata sourceChain,
+    //     string calldata sourceAddress,
+    //     bytes calldata _payload
+    // ) internal override {
+    //     string memory message = abi.decode(_payload, (string));
+    // }
 
 }
 
