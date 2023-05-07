@@ -24,6 +24,7 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
     // The spokechain IDs that the DAO expects to receive data from during the 
     // collection phase
     uint16[] public spokeChains;
+    string[] public spokeChainNames;
 
     //Challenge
 
@@ -33,8 +34,15 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
 
 // Hint: replace the array with a mapping.
 
-    constructor(uint16[] memory _spokeChains) {
+    constructor(uint16[] memory _spokeChains, string[] memory _spokeChainNames) {
         spokeChains = _spokeChains;
+        spokeChainNames = _spokeChainNames;
+        setSpokeChainData(_spokeChains, _spokeChainNames);
+    }
+
+    struct spokeChainData {
+        uint16 spokeChainId;
+        string spokeChainName;
     }
 
     struct SpokeProposalVote {
@@ -53,6 +61,8 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
         uint256 abstainVotes;
         mapping(address => bool) hasVoted;
     }
+
+    mapping(uint16 => string) public spokeChainIdToChainName;
 
     // Maps a proposal ID to a map of a chain ID to summarized spoke voting data
     mapping(uint256 => mapping(uint16 => SpokeProposalVote)) public proposalIdToChainIdToSpokeVotes;
@@ -76,6 +86,15 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
     /**
      * @dev See {IGovernor-hasVoted}.
      */
+
+    function setSpokeChainData(uint16[] memory _spokeChains, string[] memory _spokeChainNames) internal {
+        require(_spokeChains.length == _spokeChainNames.length, "not equal lengths");
+        for(uint16 i = 0; i < _spokeChains.length; i++) {
+            spokeChainIdToChainName[_spokeChains[i]] = _spokeChainNames[i];
+        }
+
+    }
+
     function hasVoted(uint256 proposalId, address account) public view virtual override returns (bool) {
         return _proposalVotes[proposalId].hasVoted[account];
     }

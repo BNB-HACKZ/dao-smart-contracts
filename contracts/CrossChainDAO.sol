@@ -38,7 +38,8 @@ contract CrossChainDAO is Governor, GovernorSettings, CrossChainGovernorCounting
 // must account for the collection phase and the votes that come with it
     IAxelarGasService public immutable gasService;
 
-
+    using StringToAddress for string;
+    using AddressToString for address;
 
 // Whether or not the DAO finished the collection phase. It would be more efficient to add Collection as a status
 // in the Governor interface, but that would require editing the source file. It is a bit out of scope to completely
@@ -46,12 +47,12 @@ contract CrossChainDAO is Governor, GovernorSettings, CrossChainGovernorCounting
     mapping(uint256 => bool) public collectionFinished;
     mapping(uint256 => bool) public collectionStarted;
  
-    constructor(IVotes _token, address _gateway, address _gasService, uint16[] memory _spokeChains)
+    constructor(IVotes _token, address _gateway, address _gasService, uint16[] memory _spokeChains, string[] memory _spokeChainNames)
         Governor("CrossChainDAO")
         GovernorSettings(0 /* 0 block */, 30 /* 6 minutes */, 0)
         GovernorVotes(_token)
         AxelarExecutable(_gateway)
-        CrossChainGovernorCountingSimple(_spokeChains)  
+        CrossChainGovernorCountingSimple(_spokeChains, _spokeChainNames)  
     {
         gasService = IAxelarGasService(_gasService);
     }
@@ -116,13 +117,54 @@ contract CrossChainDAO is Governor, GovernorSettings, CrossChainGovernorCounting
         collectionFinished[_proposalId] = phaseFinished; //this sets the collection of the proposalId on all chains as finished
     }
 
+    // If you wanted, you could also add the collection phase within the IGovernor state machine. This would require more effort 
+    // than it would be worth and is more feasible for a cross-chain DAO written from scratch
 
+  
+    // We can start by making a new public trustless function to begin the collection phase, similar to the execute function:
     // Requests the voting data from all of the spoke chains
-    //We can start by making a new public trustless function to begin the collection phase, similar to the execute function:
-
-
     
+//This function allows any user to start the collection process for a specific proposalId as long as:
+//The voting phase for the proposal has finished
+//The collection phase has not yet started
+//Recall that each spoke chain will have a DAOSatellite smart contract associated with it that can also receive and send 
+//cross-chain messages. This function sends a cross-chain message to every registered spoke chain's DAOSatellite during 
+//the collection phase. The message contains a function selector, 1, and a proposal ID. The function selector is used to 
+//request voting data for the given proposal instead of some other action from the destination DAOSatellite contract.
 
+    function requestCollections(uint256 _proposalId) public payable {
+        require(
+            block.number > proposalDeadline(_proposalId),
+            "Cannot request for vote collection until after the vote period is over!"
+        );
+        require(
+            !collectionStarted[_proposalId],
+            "Collection phase for this proposal has already started"
+        );
+
+        collectionStarted[_proposalId] = true;
+
+        //sends an empty message to each of the aggregators. If they receive a
+        // message at all, it is their cue to send data back
+
+        for(uint16 i = 0; i < spokeChains.length; i++) {
+             uint256 crossChainFee = msg.value / spokeChains.length;
+            // using "1" as the function selector
+            bytes memory payload = abi.encode(1, abi.encode(_proposalId));
+            gasService.payNativeGasForContractCall{value: crossChainFee}(
+            address(this), //sender
+            spokeChainIdToChainName[spokeChains[i]], //destination chain
+            address(this).toString(), //destination contract address, would be same address with address this since we using constant deployer
+            payload,
+            msg.sender //refund address
+            );
+
+              gateway.callContract(spokeChainIdToChainName[spokeChains[i]], address(this).toString(), payload);
+        }
+       
+
+    } 
+   
      function sendMessage(
         string calldata _destinationChain,
         string calldata _destinationAddress,
