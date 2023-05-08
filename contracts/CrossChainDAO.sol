@@ -76,6 +76,7 @@ contract CrossChainDAO is
         GovernorVotes(_token)
         AxelarExecutable(_gateway)
         CrossChainGovernorCountingSimple(_spokeChains, _spokeChainNames)
+        
     {
         gasService = IAxelarGasService(_gasService);
     }
