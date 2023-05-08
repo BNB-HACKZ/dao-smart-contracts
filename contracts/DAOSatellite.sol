@@ -57,7 +57,7 @@ contract DAOSatellite is AxelarExecutable {
         gasService = IAxelarGasService(_gasService);
         hubChain = _hubChain;
         token = _token;
-        targetSecondsPerBlock = _targetSecondsPerBlock;
+        targetSecondsPerBlock = _targetSecondsPerBlock; // predetermined seconds-per-block estimate
     }
 
     //checks whether a proposal exists in the contract by checking if the localVoteStart variable of the corresponding
@@ -89,10 +89,30 @@ contract DAOSatellite is AxelarExecutable {
 
         if (option == 0) {
             //Begin proposal on the chain, with local block times
-            //Decode the payload, which includes a proposal ID and the timestamp of when the proposal was made as mentioned in the CrossChainDAO section
+            //To do this, decode the payload, which includes a proposal ID and the timestamp of when the proposal was made as mentioned in the CrossChainDAO section
             //Perform some calculations to generate a cutOffBlockEstimation by subtracting blocks from the current block based on
             //the timestamp and a predetermined seconds-per-block estimate
             // Add a RemoteProposal struct to the proposals map, effectively registering the proposal and its voting-related data on the spoke chain
+
+            (, uint256 proposalId, uint256 proposalStart) = abi.decode(
+                _payload,
+                (uint16, uint256, uint256)
+            );
+            require(
+                !isProposal(proposalId),
+                "Proposal ID must be unique, and not already set"
+            );
+
+            uint256 cutOffBlockEstimation = 0;
+            if (proposalStart < block.timestamp) {
+                uint256 blockAdjustment = (block.timestamp - proposalStart) /
+                    targetSecondsPerBlock;
+                if (blockAdjustment < block.number) {
+                    cutOffBlockEstimation = block.number - blockAdjustment;
+                } else {
+                    cutOffBlockEstimation = block.number;
+                }
+            }
         } else if (option == 1) {
             //send vote results back to the hub chain
         }
