@@ -62,7 +62,8 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
         mapping(address => bool) hasVoted;
     }
 
-    mapping(uint16 => string) public spokeChainIdToChainName;
+    mapping(string => uint16) public spokeChainNameToChainId;
+    
 
     // Maps a proposal ID to a map of a chain ID to summarized spoke voting data
     mapping(uint256 => mapping(uint16 => SpokeProposalVote)) public proposalIdToChainIdToSpokeVotes;
@@ -90,7 +91,7 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
     function setSpokeChainData(uint16[] memory _spokeChains, string[] memory _spokeChainNames) internal {
         require(_spokeChains.length == _spokeChainNames.length, "not equal lengths");
         for(uint16 i = 0; i < _spokeChains.length; i++) {
-            spokeChainIdToChainName[_spokeChains[i]] = _spokeChainNames[i];
+            spokeChainNameToChainId[_spokeChainNames[i]] = _spokeChains[i];
         }
 
     }
