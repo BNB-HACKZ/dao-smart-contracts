@@ -15,6 +15,8 @@ contract Campaign {
     }
 
     mapping(address => Donors) public donors;
+    
+    Donors[] public _ALL_DONORS;
 
     constructor (address _owner, string memory _campaignCID, uint256 _createdAt, uint256 _target, uint256 _id) {
 
@@ -33,6 +35,7 @@ contract Campaign {
         Donors storage donor = donors[msg.sender];
         donor.name = _name;
         donor.amountDonated = msg.value;
+        _ALL_DONORS.push(donor);
         return true;
     }
 
