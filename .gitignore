@@ -1,3 +1,4 @@
+gitn
 node_modules
 .env
 coverage
@@ -9,3 +10,4 @@ typechain-types
 cache
 artifacts
 
+node_modules

@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Moonbeam",
+    "chainId": 2500,
+    "gateway": "0x9E404e6ff4F2a15C99365Bd6615fCE3FB9E9Cb76",
+    "gasService": "0x783ce2eF32Aa74B41c8EbbbeC6F632b6Da00C1e9",
+    "constAddressDeployer": "0x69aeB7Dc4f2A86873Dae8D753DE89326Cf90a77a",
+    "create3Deployer": "0x783E7717fD4592814614aFC47ee92568a495Ce0B",
+    "tokens": {
+      "aUSDC": "aUSDC"
+    },
+    "GMPExpressService": {
+      "expressOperator": "0xA523c5d5c46bE9BAEECE726A3211ea2be316766A",
+      "salt": "GMPExpressService",
+      "address": "0x5A8b2B50a73E83aAfE73c636ed2D11db9c0e8203",
+      "implementation": "0x5A8b2B50a73E83aAfE73c636ed2D11db9c0e8203",
+      "deployer": "0xA523c5d5c46bE9BAEECE726A3211ea2be316766A",
+      "proxyDeployer": "0x6D8b94118B7BE6308eBcB614D34986e97F9A4056"
+    },
+    "rpc": "http://localhost:8500/0",
+    "tokenName": "DEV",
+    "tokenSymbol": "DEV"
+  },
+  {
+    "name": "Avalanche",
+    "chainId": 2501,
+    "gateway": "0x54C156f087EBA12a869E0CBb49548c3F55E80edC",
+    "gasService": "0xD3cB555CB530C3374B122242b15d2943445c31d6",
+    "constAddressDeployer": "0x69aeB7Dc4f2A86873Dae8D753DE89326Cf90a77a",
+    "create3Deployer": "0x783E7717fD4592814614aFC47ee92568a495Ce0B",
+    "tokens": {
+      "aUSDC": "aUSDC"
+    },
+    "GMPExpressService": {
+      "expressOperator": "0x26A3B0F45fCA655Cb6C2c0498C6870394A5a8b93",
+      "salt": "GMPExpressService",
+      "address": "0xC89c53D6C7031DA523387f72588380900955533D",
+      "implementation": "0xC89c53D6C7031DA523387f72588380900955533D",
+      "deployer": "0x26A3B0F45fCA655Cb6C2c0498C6870394A5a8b93",
+      "proxyDeployer": "0x311837955A39a29D37E3bb506d3aca32365F0511"
+    },
+    "rpc": "http://localhost:8500/1",
+    "tokenName": "Avax",
+    "tokenSymbol": "AVAX"
+  }
+]
