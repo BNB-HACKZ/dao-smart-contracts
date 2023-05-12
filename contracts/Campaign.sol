@@ -42,4 +42,11 @@ contract Campaign {
         _ALL_DONORS.push(donor);
         return true;
     }
+    
+    function claim() public payable {
+        require(msg.sender == owner);
+        (bool success, ) = payable(owner).call{value: address(this).balance}("");
+        require(success, "Failed to claim");
+    }
+    
 }
