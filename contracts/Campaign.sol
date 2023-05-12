@@ -8,27 +8,31 @@ contract Campaign {
     uint256 public createdAt;
     uint256 public raisedFunds;
     uint256 public target;
-    
+
     struct Donors {
         string name;
         uint256 amountDonated;
     }
 
     mapping(address => Donors) public donors;
-    
+
     Donors[] public _ALL_DONORS;
 
-    constructor (address _owner, string memory _campaignCID, uint256 _createdAt, uint256 _target, uint256 _id) {
-
+    constructor(
+        address _owner,
+        string memory _campaignCID,
+        uint256 _createdAt,
+        uint256 _target,
+        uint256 _id
+    ) {
         owner = _owner;
         campaignCID = _campaignCID;
         createdAt = _createdAt;
         target = _target;
         id = _id;
-
     }
 
-    function donate (string memory _name) public payable returns(bool) {
+    function donate(string memory _name) public payable returns (bool) {
         require(msg.value > 0, "You cannot donate below 0");
         uint256 donation = msg.value;
         raisedFunds += donation;
@@ -38,8 +42,4 @@ contract Campaign {
         _ALL_DONORS.push(donor);
         return true;
     }
-
-    
-
-    
 }
