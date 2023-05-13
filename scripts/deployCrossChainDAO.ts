@@ -17,7 +17,7 @@ const {utils: {
 let chains = isTestnet ? require("../config/testnet.json") : require("../config/local.json");
 
 let GovernanceTokenAddr = "0x63C69067938eB808187c8cCdd12D5Bcf0375b2Ac";
-const moonBeamDAOAddr = "0x3a6530214288EBCc1B958Fe3C4BCc8a026B4EA0b"
+const moonBeamDAOAddr = "0xA06AebAb1396ddBA55703341164BD5eeD2530A25"
 
 //const spokeChainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
@@ -39,8 +39,8 @@ function getChainIds(chains: any){
 
 export async function main() {
      getChainIds(chains);
-     //await crossChainDAODeploy("Moonbeam", wallet, GovernanceTokenAddr);
-     await interact("Moonbeam", wallet, moonBeamDAOAddr);
+     await crossChainDAODeploy("Moonbeam", wallet, GovernanceTokenAddr);
+     //await interact("Moonbeam", wallet, moonBeamDAOAddr);
  
 }
 
@@ -75,6 +75,7 @@ async function interact(hubChain: string, wallet: any, daoAddr: string) {
     const governanceTokenInstance = GovernanceTokenfactory.attach(daoAddr);
 
     const result = await governanceTokenInstance.gasService();
+    //const result2 = await governanceTokenInstance.spokeChainNames(0);
     console.log(result);
    
 }
