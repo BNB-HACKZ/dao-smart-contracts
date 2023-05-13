@@ -7,6 +7,7 @@ contract CampaignManager {
     uint256 public campaignIdCounter;
     Campaign[] campaigns;
     mapping(address => uint256) public campaignIds;
+    mapping(address => Campaign) public IDtoCampaign;
     uint16[] public spokeChains;
     string[] public spokeChainNames;
 
@@ -15,17 +16,17 @@ contract CampaignManager {
         uint256 _target,
         uint16[] memory _spokeChains, string[] memory _spokeChainNames
     ) public returns (bool) {
-        uint256 campaignID = campaignIdCounter;
-        campaignIdCounter++;
         Campaign campaign = new Campaign(
             msg.sender,
             _campaignCID,
             block.timestamp,
             _target,
-            campaignID
+            campaignIdCounter
         );
         campaigns.push(campaign);
-        campaignIds[address(campaign)] = campaignID;
+        campaignIds[address(campaign)] = campaignIdCounter;
+        IDtoCampaign[campaignIdCounter] = campaign;
+         campaignIdCounter++;
         return true;
     }
 
