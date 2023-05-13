@@ -28,7 +28,7 @@ contract CrossChainDAO is
     //Architectural flow
 
     // Count votes from spoke chains
-    // Add a new collection phase between voting and execution
+    // Add a new collection phase (collecting votes from all spoke chains) between voting and execution phases
     // Requesting the collection of votes from spoke chains
     // Receiving the collection of votes from spoke chains
     // Add functionality to let spoke chains know when there is a new proposal to vote on
@@ -59,7 +59,7 @@ contract CrossChainDAO is
 
     // Whether or not the DAO finished the collection phase. It would be more efficient to add Collection as a status
     // in the Governor interface, but that would require editing the source file. It is a bit out of scope to completely
-    // refactor the OpenZeppelin governance contract for cross-chain action!
+    // refactor the OpenZeppelin governance contract just for cross-chain action!
     
     mapping(uint256 => bool) public collectionFinished;
     mapping(uint256 => bool) public collectionStarted;

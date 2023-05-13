@@ -11,8 +11,9 @@ import {StringToBytes32, Bytes32ToString} from "@axelar-network/axelar-gmp-sdk-s
 import "@openzeppelin/contracts/utils/Timers.sol";
 import "@openzeppelin/contracts/utils/Checkpoints.sol";
 import "@openzeppelin/contracts/governance/utils/IVotes.sol";
+import {Upgradable} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol";
 
-contract DAOSatellite is AxelarExecutable {
+contract DAOSatellite is AxelarExecutable, Upgradable {
     // The cross-chain DAO is never deployed on the spoke chains because it wouldn't be efficient to replicate all
     // of the data across each spoke chain. But, we still need an interface to work with the CrossChainDAO smart contract
     // on the spoke chains. Hence, we will create a satellite contract named DAOSatellite.
@@ -21,6 +22,10 @@ contract DAOSatellite is AxelarExecutable {
 
     using StringToAddress for string;
     using AddressToString for address;
+
+    error AlreadyInitialized();
+
+    string public chainName; 
 
     string public hubChain;
     // address public hubChainAddr;
@@ -74,6 +79,17 @@ contract DAOSatellite is AxelarExecutable {
     //two instances in which the CrossChainDAO sends a message:
     //When the CrossChainDAO wants to notify the spoke chains of a new proposal (function selector is 0)
     //When the CrossChainDAO wants the spoke chains to send their voting data to the hub chain (function selector is 1)
+
+    function _setup(bytes calldata params) internal override {
+        string memory chainName_ = abi.decode(params, (string));
+        if (bytes(chainName).length != 0) revert AlreadyInitialized();
+        chainName = chainName_;
+    }
+
+    function contractId() external pure returns (bytes32) {
+        return keccak256("example");
+    }
+
 
     function _execute(
         string calldata sourceChain,

@@ -7,10 +7,13 @@ contract CampaignManager {
     uint256 public campaignIdCounter;
     Campaign[] campaigns;
     mapping(address => uint256) public campaignIds;
+    uint16[] public spokeChains;
+    string[] public spokeChainNames;
 
     function createCampaign(
         string memory _campaignCID,
-        uint256 _target
+        uint256 _target,
+        uint16[] memory _spokeChains, string[] memory _spokeChainNames
     ) public returns (bool) {
         uint256 campaignID = campaignIdCounter;
         campaignIdCounter++;
