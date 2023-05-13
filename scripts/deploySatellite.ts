@@ -55,7 +55,6 @@ async function deploy(_hubChain: string, chain:any, wallet: any, governanceToken
 
 let targetSecond: any;
 async function main() {
-    //let cnIndex = 0;
     const promises = [];
    
     for(let i = 0; i < spokeChainNames.length; i++) {
@@ -74,17 +73,13 @@ async function main() {
             }
    }   
 
-        //console.log(`Deploying [${chainName}]`);
-      
-        //promises.push(deploy(chainInfo, wallet));
-        
-        //console.log(targetSecond)
+        console.log(`Deploying [${chainName}]`);
 
-        //await deploy(hubChain, chainInfo, wallet, governanceTokenAddr, targetSecond);
+        await deploy(hubChain, chainInfo, wallet, governanceTokenAddr, targetSecond);
         
     }
 
-    await interact(spokeChain, wallet, satelliteAddr)
+    //await interact(spokeChain, wallet, satelliteAddr)
 
 }
 

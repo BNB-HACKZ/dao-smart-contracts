@@ -35,8 +35,6 @@ function getChainIds(chains: any){
     }
 }
 
-
-
 export async function main() {
      getChainIds(chains);
      await crossChainDAODeploy("Moonbeam", wallet, GovernanceTokenAddr);
@@ -50,9 +48,6 @@ async function crossChainDAODeploy(hubChain: string, wallet: any, governanceToke
     console.log(`Deploying CrossChainDAO for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
     const connectedWallet = wallet.connect(provider);
-
-    // const GovernanceTokenfactory =  new GovernanceToken__factory(connectedWallet);
-    // const governanceTokenInstance = GovernanceTokenfactory.attach(token)
 
     const crossChainDAOFactory = new CrossChainDAO__factory(connectedWallet);
     const contract: CrossChainDAO = await crossChainDAOFactory.deploy(
@@ -71,10 +66,10 @@ async function interact(hubChain: string, wallet: any, daoAddr: string) {
     const provider = getDefaultProvider(chain.rpc);
     const connectedWallet = wallet.connect(provider);
 
-    const GovernanceTokenfactory =  new CrossChainDAO__factory(connectedWallet);
-    const governanceTokenInstance = GovernanceTokenfactory.attach(daoAddr);
+    const crossChainDAOFactory =  new CrossChainDAO__factory(connectedWallet);
+    const crossChainDAOInstance = crossChainDAOFactory.attach(daoAddr);
 
-    const result = await governanceTokenInstance.gasService();
+    const result = await crossChainDAOInstance.gasService();
     //const result2 = await governanceTokenInstance.spokeChainNames(0);
     console.log(result);
    

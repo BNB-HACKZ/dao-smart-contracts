@@ -4,20 +4,11 @@ import fs from "fs/promises";
 
 const {defaultAbiCoder} = utils;
 
-// const {
-//     getDefaultProvider,
-//     constants: { AddressZero },
-//     utils: { defaultAbiCoder },
-//   } = require("ethers");
-
   const { deployUpgradable } = require("@axelar-network/axelar-gmp-sdk-solidity");
   const {utils: {
     deployContract
 }} = require("@axelar-network/axelar-local-dev");
 
-
-//const { keccak256, defaultAbiCoder } = utils;
-//const {deployContract } = utility;
 //import * as GovernanceToken from "../artifacts/contracts/GovernanceToken.sol/GovernanceToken.json" ;
 const GovernanceToken = require("../artifacts/contracts/GovernanceToken.sol/GovernanceToken.json");
 const ExampleProxy = require("../artifacts/contracts/ExampleProxy.sol/ExampleProxy.json");
