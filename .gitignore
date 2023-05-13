@@ -11,14 +11,19 @@ R.yarn/*
 #.pnp.*
 node_modules
 
+
 node_modules
 .env
 coverage
 coverage.json
 typechain
 typechain-types
+yarn.lock
+tsconfig.tsbuildinfo
+
 
 # Hardhat files
 cache
 artifacts
+
 
