@@ -143,7 +143,7 @@ contract CrossChainDAO is
     //the collection phase. The message contains a function selector, 1, and a proposal ID. The function selector is used to
     //request voting data for the given proposal instead of some other action from the destination DAOSatellite contract.
 
-    function requestCollections(uint256 _proposalId) public payable {
+    function requestCollections(uint256 _proposalId, address _satelliteAddr) public payable {
         require(
             block.number > proposalDeadline(_proposalId),
             "Cannot request for vote collection until after the vote period is over!"
@@ -164,14 +164,16 @@ contract CrossChainDAO is
             gasService.payNativeGasForContractCall{value: crossChainFee}(
                 address(this), //sender
                 spokeChainNames[i], //destination chain
-                address(this).toString(), //destination contract address, would be same address with address(this) since we are using constant address deployer
+                //address(this).toString(), //destination contract address, would be same address with address(this) since we are using constant address deployer
+                _satelliteAddr.toString(),
                 payload,
                 msg.sender //refund address //payable(address(this)) //test this later to see the one that is necessary to suit your needs
             );
 
             gateway.callContract(
                 spokeChainNames[i],
-                address(this).toString(),
+                //address(this).toString(),
+                _satelliteAddr.toString(),
                 payload
             );
         }

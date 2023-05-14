@@ -24,9 +24,11 @@ contract CampaignSatellite is AxelarExecutable, Upgradable {
     //mapping(uint256 => RemoteCampaign) public rcampaigns;
     mapping(uint256 => CampaignData) public campaigns;
 
+    mapping (uint256 => RemoteCampaign) public remoteCampaignsData;
+
 
     struct CampaignData {
-        string campaignCID;
+        //string campaignCID;
         address campaignOwner;
         uint256 campaignId;
         uint256 raisedFunds;
@@ -39,11 +41,11 @@ contract CampaignSatellite is AxelarExecutable, Upgradable {
         Ongoing
     }
 
-    // struct RemoteCampaign {
-    //     //Blocks provided by the hub chain as to when the local values should start/finish
-    //     uint256 localCampaignStart;
-    //     bool campaignFinished;
-    // }
+    struct RemoteCampaign {
+        //Blocks provided by the hub chain as to when the local values should start/finish
+        uint256 timeCampaignStarted;
+        bool campaignFinished;
+    }
 
     constructor(
         string memory _hubChain,
@@ -56,20 +58,83 @@ contract CampaignSatellite is AxelarExecutable, Upgradable {
 
     //checks whether a campaign exists in the contract by checking if the localVoteStart variable of the corresponding
     //campaign in the campaigns mapping has been set to a non-zero value.
-    function isCampaign(uint256 campaignId) public view returns(bool) {
+    function isCampaign(uint256 _campaignId) public view returns(bool) {
+          return remoteCampaignsData[_campaignId].timeCampaignStarted != 0;
+    }
+
+    function _execute(string calldata sourceChain,
+        string calldata sourceAddress,
+        bytes memory _payload) internal override {
+            require(
+            keccak256(abi.encodePacked(sourceChain)) ==
+                keccak256(abi.encodePacked(hubChain)),
+            "Only messages from the hub chain can be received!"
+        );
+
+        uint16 option;
+        assembly {
+            option := mload(add(_payload, 32))
+        }
+        // Do 1 of 2 things:
+        //Begin proposal on the chain, with local block times
+        if (option == 0) {
+
+            //To do this, decode the payload, which includes a proposal ID and the timestamp of when the proposal was made as mentioned in the CrossChainDAO section
+            //Perform some calculations to generate a cutOffBlockEstimation by subtracting blocks from the current block based on
+            //the timestamp and a predetermined seconds-per-block estimate
+            // Add a RemoteProposal struct to the proposals map, effectively registering the proposal and its voting-related data on the spoke chain
+            (, uint256 _campaignId, uint256 campaignStart) = abi.decode(
+             _payload,
+             (uint16, uint256, uint256)
+            );
+            require(
+                !isCampaign(_campaignId),
+                "Proposal ID must be unique, and not already set"
+            );
+
+            remoteCampaignsData[_campaignId] = RemoteCampaign(campaignStart, false);
+
+        }
+            else if (option == 1) {
+                
+            //send campaign results back to the hub chain
+            (, uint256 _campaignId) = abi.decode(_payload, (uint16, uint256));
+            CampaignData storage campaign = campaigns[_campaignId];
+            bytes memory campaignDataPayload = abi.encode(
+            uint16(0), _campaignId, campaign.campaignOwner, campaign.raisedFunds, campaign.hasReachedTarget, campaign.donators
+            );
+
+               gasService.payNativeGasForContractCall{value: 0.1 ether}(
+                    address(this), //sender
+                    hubChain, //destination chain
+                    //address(this).toString(), //destination contract address, would be same address with address(this) since we are using constant address deployer
+                    sourceAddress,
+                    campaignDataPayload, //payload
+                    msg.sender //refund address //payable(address(this)) //test this later to see the one that is necessary to suit your needs
+                );
+
+                gateway.callContract(
+                    hubChain, //destination chain
+                    //address(this).toString(), //destination contract address, would be same address with address(this) since we are using constant address deployer, if not using constant deployer then will be "hubChainAddr"
+                    sourceAddress,
+                    campaignDataPayload //payload
+                );
+                campaigns[_campaignId].hasReachedTarget = true;
+                remoteCampaignsData[_campaignId].campaignFinished = true;
+
+            }
 
     }
 
-    function _execute() internal {
-
+    function crossChainDonate(uint256 _campaignId, uint256 _amount, address payable _depositAddress) public virtual payable{
+        RemoteCampaign storage campaign = remoteCampaignsData[_campaignId];
+        require(!campaign.campaignFinished, "campaign has been completed");
+        require(isCampaign(_campaignId), "not a valid campaign");
+        require(msg.value > _amount, "sent amount is lower than amount you want to donate");
+        _depositAddress.transfer(msg.value);
     }
 
-    function crossChainDonate() public virtual {
-
-    }
-
-    function countDonations() internal virtual {
-        
+    function countDonations(uint256 _campaignId) internal virtual {    
     }
 
 

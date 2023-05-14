@@ -25,16 +25,17 @@ abstract contract CampaignCountingSimple {
     }
 
     struct SpokeCampaignData {
-        string campaignCID;
+        //string campaignCID;
         address campaignOwner;
         uint256 campaignId;
         uint256 raisedFunds;
-        bool initialized;  //This checks whether data was received from the spoke chains or not
+        bool hasReachedTarget;  //This checks whether data was received from the spoke chains or not
         address[] donators;
+        bool initialized;
     }
 
     struct CampaignData {
-        string campaignCID;
+        //string campaignCID;
         address campaignOwner;
         uint256 campaignId;
         uint256 raisedFunds;
@@ -65,7 +66,7 @@ abstract contract CampaignCountingSimple {
     }
 
     function _targetReached() internal view virtual {
-        
+
     }
 
     function _countDonations() internal virtual  {

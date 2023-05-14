@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 contract Campaign {
+
     address public owner;
     string public campaignCID;
     uint256 public id;
@@ -47,6 +48,10 @@ contract Campaign {
         require(msg.sender == owner);
         (bool success, ) = payable(owner).call{value: address(this).balance}("");
         require(success, "Failed to claim");
+    }
+
+    receive() external payable {
+        // Handle the received Ether here
     }
     
 }

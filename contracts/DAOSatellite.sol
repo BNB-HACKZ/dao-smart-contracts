@@ -91,11 +91,12 @@ contract DAOSatellite is AxelarExecutable, Upgradable {
     }
 
 
+    //execute here sends receives a proposal and sends a payload back to the hub
     function _execute(
         string calldata sourceChain,
         string calldata /*sourceAddress*/,
         bytes memory _payload
-    ) internal override /*(AxelarExecutable)*/ {
+    ) internal override  /*(AxelarExecutable)*/ {
         require(
             keccak256(abi.encodePacked(sourceChain)) ==
                 keccak256(abi.encodePacked(hubChain)),
