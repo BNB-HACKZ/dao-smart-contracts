@@ -1,22 +1,49 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 import "./Campaign.sol";
+import {IAxelarGasService} from "@axelar-network/axelar-cgp-solidity/contracts/interfaces/IAxelarGasService.sol";
+import {IAxelarGateway} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGateway.sol";
+import {AxelarExecutable} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/executable/AxelarExecutable.sol";
+import {Upgradable} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/upgradable/Upgradable.sol";
+import {StringToAddress, AddressToString} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/AddressString.sol";
+import {StringToBytes32, Bytes32ToString} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/utils/Bytes32String.sol";
 
-contract CampaignManager {
-    uint256 public campaignIdCounter;
-    Campaign[] campaigns;
-    mapping(address => uint256) public campaignIds;
-    uint16[] public spokeChains;
-    string[] public spokeChainNames;
+import "./CampaignCountingSimple.sol";
+
+contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
+    IAxelarGasService public immutable gasService;
+    using StringToAddress for string;
+    using AddressToString for address;
+
+    uint256 public campaignIdCounter = 1;
+    Campaign[] allCampaigns;
+    mapping(address => Campaign[]) public ownerToCampaigns;
+    mapping(address => uint256[]) public ownerToCampaignIds;
+    mapping(uint256 => Campaign) public idToCampaigns;
+
+    uint256[] public allCampaignIds;
+
+    mapping(uint256 => bool) public collectionFinished;
+    mapping(uint256 => bool) public collectionStarted;
+
+    constructor(
+        address _gateway,
+        address _gasService,
+        uint16[] memory _spokeChains,
+        string[] memory _spokeChainNames
+    ) AxelarExecutable(_gateway)  CampaignCountingSimple(_spokeChains, _spokeChainNames){
+        gasService = IAxelarGasService(_gasService);
+    }
 
     function createCampaign(
         string memory _campaignCID,
         uint256 _target,
-        uint16[] memory _spokeChains, string[] memory _spokeChainNames
-    ) public returns (bool) {
+        address _campaignSatelliteAddr
+    ) public payable virtual returns (uint256) {
         uint256 campaignID = campaignIdCounter;
         campaignIdCounter++;
+
         Campaign campaign = new Campaign(
             msg.sender,
             _campaignCID,
@@ -24,9 +51,62 @@ contract CampaignManager {
             _target,
             campaignID
         );
-        campaigns.push(campaign);
-        campaignIds[address(campaign)] = campaignID;
-        return true;
+        allCampaigns.push(campaign);
+        allCampaignIds.push(campaignID);
+        ownerToCampaigns[msg.sender].push(campaign);
+        ownerToCampaignIds[msg.sender].push(campaignID);
+        idToCampaigns[campaignID] = campaign;
+
+        //sends the proposal to all of the other chains
+        if (spokeChains.length > 0) {
+            uint256 crossChainFee = msg.value / spokeChains.length;
+
+            //Iterate over every spoke chain
+            for (uint16 i = 0; i < spokeChains.length; i++) {
+                // using "0" as the function selector for destination contract
+                bytes memory payload = abi.encode(
+                    0,
+                    abi.encode(campaignID, block.timestamp)
+                );
+
+                // Send a cross-chain message with axelar to the chain in the iterator
+                gasService.payNativeGasForContractCall{value: crossChainFee}(
+                    address(this), //sender
+                    spokeChainNames[i], //destination chain
+                    //address(this).toString(), //destination contract address, would be same address with address(this) since we are using constant address deployer
+                    _campaignSatelliteAddr.toString(),
+                    payload,
+                    msg.sender //refund address //payable(address(this)) //test this later to see the one that is necessary to suit your needs
+                );
+
+                gateway.callContract(
+                    spokeChainNames[i],
+                    //address(this).toString(),
+                    _campaignSatelliteAddr.toString(),
+                    payload
+                );
+            }
+        }
+
+        return campaignID;
+    }
+
+    function getOwnerCampaigns()
+        public
+        view
+        returns (Campaign[] memory _allOwnerCampaigns)
+    {
+        _allOwnerCampaigns = ownerToCampaigns[msg.sender];
+    }
+
+    function getOwnerIds() public view returns (uint256[] memory _allOwnerIds) {
+        _allOwnerIds = ownerToCampaignIds[msg.sender];
+    }
+
+    function getParticularCampaign(
+        uint256 _campaignId
+    ) public view returns (Campaign _campaign) {
+        _campaign = idToCampaigns[_campaignId];
     }
 
     function getAllCampaignAddresses()
@@ -35,37 +115,86 @@ contract CampaignManager {
         returns (address[] memory _campaigns)
     {
         _campaigns = new address[](campaignIdCounter);
-        for (uint i = 0; i < campaignIdCounter; i++) {
-            _campaigns[i] = address(campaigns[i]);
+        for (uint i = 1; i < campaignIdCounter; i++) {
+            _campaigns[i] = address(allCampaigns[i]);
         }
         return _campaigns;
     }
 
-    function getCampaignDetails(
-        address[] calldata _campaignList
-    )
+    function getAllCampaigns()
         public
         view
-        returns (
-            string[] memory campaignCID,
-            address[] memory owner,
-            uint256[] memory id,
-            uint256[] memory raisedFunds
-        )
+        returns (Campaign[] memory _allCampaigns)
     {
-        owner = new address[](_campaignList.length);
-        id = new uint256[](_campaignList.length);
-        campaignCID = new string[](_campaignList.length);
-        raisedFunds = new uint256[](_campaignList.length);
+        _allCampaigns = allCampaigns;
+    }
 
-        for (uint256 i = 0; i < _campaignList.length; i++) {
-            uint256 campaignID = campaignIds[_campaignList[i]];
-            owner[i] = campaigns[campaignID].owner();
-            id[i] = campaigns[campaignID].id();
-            campaignCID[i] = campaigns[campaignID].campaignCID();
-            raisedFunds[i] = campaigns[campaignID].raisedFunds();
+    function getAllCampaignIds()
+        public
+        view
+        returns (uint256[] memory _allCampaignIds)
+    {
+        _allCampaignIds = allCampaignIds;
+    }
+
+    // function that checks whether or not that each of the spoke chains have sent in donation data before
+    // allowing a withdrawal (which is found by checking completed on a campaign on all chains)
+    function _beforeWithdrawal() public {}
+
+    function finishCollectionPhase(uint256 _campaignId) public {
+           bool phaseFinished = true;
+        //loop will only run as long as phaseFinished == true
+        for (uint16 i = 0; i < spokeChains.length && phaseFinished; i++) {
+            phaseFinished =
+                phaseFinished &&
+                campaignIdToChainIdToSpokeCampaignData[_campaignId][spokeChains[i]]
+                    .initialized;
         }
 
-        return (campaignCID, owner, id, raisedFunds);
+        collectionFinished[_campaignId] = phaseFinished; //this sets the collection of the proposalId on all chains as finished
     }
+
+    function requestCollections(uint256 _campaignId) public payable {}
+
+    function _execute() internal {}
+
+    function onReceiveSpokeDonationData() internal {}
+
+    function crossChainDonateCreateCampaign() public {}
+
+    //function that marks a collection phase as true if all of the spoke chains have
+    //sent a cross-chain message back
+    // finishCollectionPhase
+
+    // function getCampaignDetails(
+    //     address[] calldata _campaignList
+    // )
+    //     public
+    //     view
+    //     returns (
+    //         string[] memory campaignCID,
+    //         address[] memory owner,
+    //         uint256[] memory id,
+    //         uint256[] memory raisedFunds
+    //     )
+    // {
+    //     owner = new address[](_campaignList.length);
+    //     id = new uint256[](_campaignList.length);
+    //     campaignCID = new string[](_campaignList.length);
+    //     raisedFunds = new uint256[](_campaignList.length);
+
+    //     for (uint256 i = 0; i < _campaignList.length; i++) {
+    //         uint256 campaignID = campaignIds[_campaignList[i]];
+    //         owner[i] = campaigns[campaignID].owner();
+    //         id[i] = campaigns[campaignID].id();
+    //         campaignCID[i] = campaigns[campaignID].campaignCID();
+    //         raisedFunds[i] = campaigns[campaignID].raisedFunds();
+    //     }
+
+    //     return (campaignCID, owner, id, raisedFunds);
+    // }
+
+    // function getAllDonators() {
+
+    // }
 }

@@ -29,8 +29,8 @@ contract CrossChainDAO is
 
     // Count votes from spoke chains
     // Add a new collection phase (collecting votes from all spoke chains) between voting and execution phases
-    // Requesting the collection of votes from spoke chains
-    // Receiving the collection of votes from spoke chains
+    // Request the collection of votes from spoke chains
+    // Receive the collection of votes from spoke chains
     // Add functionality to let spoke chains know when there is a new proposal to vote on
     // (Optional) Add ability to receive cross-chain messages to do non-voting action(s), like proposing or executing
 
@@ -177,7 +177,7 @@ contract CrossChainDAO is
         }
     }
 
-    //This function will receive cross chain voting data, will come back to implement it
+    //This function will receive cross chain voting data
     function _execute(
         string calldata sourceChain,
         string calldata /*sourceAddress*/,
@@ -188,7 +188,7 @@ contract CrossChainDAO is
         //The code below loads a uint16 value from the memory location specified by the
         // _payload parameter and assigns it to the option variable. The assumption
         // here is that the _payload parameter points to a location in memory where a uint16
-        // value has been previously encoded.
+        // v(alue has been previously encoded.
         uint16 _srcChainId = spokeChainNameToChainId[sourceChain];
         uint16 option;
         assembly {
@@ -208,7 +208,7 @@ contract CrossChainDAO is
     }
 
     //if you are implementing _execute from the governor contract remember to override it as well
-
+    //we want to know for which proposal the data received is for, and initialize it to true that it has been received
     function onReceiveSpokeVotingData(
         uint16 _srcChainId,
         bytes memory payload
@@ -258,7 +258,8 @@ contract CrossChainDAO is
         address[] memory targets,
         uint256[] memory values,
         bytes[] memory calldatas,
-        string memory description
+        string memory description,
+        address _satelliteAddr
     ) public payable virtual returns (uint256) {
         uint256 proposalId = super.propose(
             targets,
@@ -280,17 +281,20 @@ contract CrossChainDAO is
                 );
 
                 // Send a cross-chain message with axelar to the chain in the iterator
+
                 gasService.payNativeGasForContractCall{value: crossChainFee}(
                     address(this), //sender
                     spokeChainNames[i], //destination chain
-                    address(this).toString(), //destination contract address, would be same address with address(this) since we are using constant address deployer
+                    //address(this).toString(), //destination contract address, would be same address with address(this) since we are using constant address deployer
+                     _satelliteAddr.toString(),
                     payload,
                     msg.sender //refund address //payable(address(this)) //test this later to see the one that is necessary to suit your needs
                 );
 
                 gateway.callContract(
                     spokeChainNames[i],
-                    address(this).toString(),
+                    //address(this).toString(),
+                    _satelliteAddr.toString(),
                     payload
                 );
             }

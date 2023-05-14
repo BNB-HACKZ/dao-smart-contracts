@@ -68,10 +68,10 @@ async function main() {
 //   let votePower1Account1 = await sourceContract.getVotes(avalancheConnectedWallet.address);
 //   console.log(`Account 1 on Avalanche has a vote power of ${ethers.utils.formatEther(votePower1Account1)} units`)
 
-//   //self delegate
-//     const delegateTx = await sourceContract.connect(avalancheConnectedWallet).delegate(avalancheConnectedWallet.address);
-//     const delegateTxReceipt = await delegateTx.wait();
-//     console.log(`Tokens delegated from ${avalancheConnectedWallet.address} for ${avalancheConnectedWallet.address} at block ${delegateTxReceipt.blockNumber}`);
+  //self delegate
+    const delegateTx = await sourceContract.connect(avalancheConnectedWallet).delegate(avalancheConnectedWallet.address);
+    const delegateTxReceipt = await delegateTx.wait();
+    console.log(`Tokens delegated from ${avalancheConnectedWallet.address} for ${avalancheConnectedWallet.address} at block ${delegateTxReceipt.blockNumber}`);
 
 //     //check the voting power again
 //     let votePower2Account1 = await sourceContract.getVotes(avalancheConnectedWallet.address);
