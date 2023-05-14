@@ -48,18 +48,18 @@ async function main() {
     destinationContract: await destContract.chainName(),
   });
 
-//   const tx = await sourceContract.sendMessage(
-//     "Avalanche",
-//     avalancheChain.messageReceiver,
-//     "hello world!",
-//     {
-//       value: BigInt(3000000),
-//     },
-//   );
-//   await tx.wait();
+  // const tx = await sourceContract.sendMessage(
+  //   "Avalanche",
+  //   avalancheChain.messageReceiver,
+  //   "hello world!",
+  //   {
+  //     value: BigInt(3000000),
+  //   },
+  // );
+  // await tx.wait();
 
-//   const tx = await sourceContract.mint(MINT_VALUE);
-//   const txReceipt = await tx.wait();
+  const tx = await sourceContract.mint(MINT_VALUE);
+  const txReceipt = await tx.wait();
 
   const tokenBalanceAccount1 = await sourceContract.balanceOf(avalancheConnectedWallet.address);
   console.log(`Account 1 on Avalanche has a balance of ${ethers.utils.formatEther(tokenBalanceAccount1)} vote tokens`);
@@ -78,20 +78,20 @@ async function main() {
 //     console.log(`Account 2 has an updated vote power of ${ethers.utils.formatEther(votePower2Account1)} units`)
 
   //cross-chain transfer
-//   const descChainName = destContract.chainName();
-//   const stringAddress = ethers.utils.getAddress(moonbeamChain.messageSender);
-//   const transferRemoteTx = await sourceContract.transferRemote(
-//     descChainName,
-//     avalancheConnectedWallet.address,
-//     TRANSFER_VALUE,
-//     {
-//         value: BigInt(30000000),
-//     },
-//     );
+  const descChainName = destContract.chainName();
+  const stringAddress = ethers.utils.getAddress(moonbeamChain.messageSender);
+  const transferRemoteTx = await sourceContract.transferRemote(
+    descChainName,
+    avalancheConnectedWallet.address,
+    TRANSFER_VALUE,
+    {
+        value: BigInt(30000000),
+    },
+    );
 
-//     const trReceipt = await transferRemoteTx.wait();
-//     //console.log(trReceipt);
-//     console.log("remote transfer successful")
+    const trReceipt = await transferRemoteTx.wait();
+    //console.log(trReceipt);
+    console.log("remote transfer successful")
 
     // const updatedBalance1 = await sourceContract.balanceOf(avalancheConnectedWallet.address);
 
