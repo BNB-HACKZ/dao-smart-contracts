@@ -31,7 +31,7 @@ let hubChain = "Binance";
 let governanceTokenAddr = "0x63C69067938eB808187c8cCdd12D5Bcf0375b2Ac";
 let satelliteAddr = "0x84c6a8009e1be1e3F43e9Db53Aa673f851bFb4A8";
 
-let spokeChain = "Moonbeam";
+//let spokeChain = "Moonbeam";
 
 
 async function deploy(_hubChain: string, chain:any, wallet: any, governanceToken: string, targetSecondsPerBlock: number) {
@@ -43,7 +43,7 @@ async function deploy(_hubChain: string, chain:any, wallet: any, governanceToken
         connectedWallet,
         daoSatellite,
         ExampleProxy,
-        [_hubChain, chain.gateway, chain.gasService, governanceToken, targetSecondsPerBlock],
+        [_hubChain, chain.gateway, chain.gasReceiver, governanceToken, targetSecondsPerBlock],
         [],
         //defaultAbiCoder.encode(['string'], [chain.name]),
         defaultAbiCoder.encode(['string'], [chain.name]),

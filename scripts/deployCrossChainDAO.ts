@@ -21,8 +21,10 @@ const moonBeamDAOAddr = "0xA06AebAb1396ddBA55703341164BD5eeD2530A25"
 
 //const spokeChainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const spokeChainNames = ["Binance", "Avalanche"];
+const spokeChainNames = ["Polygon", "Avalanche"];
 const spokeChainIds:any = [];
+
+const satellitedAddr: any = "";
 
 function getChainIds(chains: any){
     for(let i = 0; i < spokeChainNames.length; i++) {
@@ -53,7 +55,7 @@ async function crossChainDAODeploy(hubChain: string, wallet: any, governanceToke
     const contract: CrossChainDAO = await crossChainDAOFactory.deploy(
         governanceToken,
         chain.gateway,
-        chain.gasService,
+        chain.gasReceiver,
         spokeChainIds,
         spokeChainNames
     );

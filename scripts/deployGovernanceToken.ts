@@ -29,7 +29,7 @@ let chains = isTestnet ? require("../config/testnet.json") : require("../config/
 // get chains
 //const chainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const chainNames2 = ["Binance","Polygon", "Avalanche"];
+const chainNames2 = ["Polygon", "Avalanche"];
 
 const chainsInfo: any = [];
 
