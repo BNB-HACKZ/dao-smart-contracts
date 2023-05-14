@@ -29,7 +29,7 @@ let chains = isTestnet ? require("../config/testnet.json") : require("../config/
 // get chains
 //const chainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const chainNames2 = ["Moonbeam", "Avalanche"];
+const chainNames2 = ["Binance","Polygon", "Avalanche"];
 
 const chainsInfo: any = [];
 
@@ -46,7 +46,7 @@ async function deploy(chain:any, wallet: any) {
         connectedWallet,
         GovernanceToken,
         ExampleProxy,
-        [chain.gateway, chain.gasService],
+        [chain.gateway, chain.gasReceiver],
         [],
         defaultAbiCoder.encode(['string'], [chain.name]),
         'governance-token'

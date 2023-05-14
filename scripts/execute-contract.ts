@@ -7,7 +7,7 @@ const {
 } = require("@axelar-network/axelar-local-dev");
 
 const chains = require("../config/local.json");
-const moonbeamChain = chains.find((chain: any) => chain.name === "Moonbeam");
+const moonbeamChain = chains.find((chain: any) => chain.name === "Binance");
 const avalancheChain = chains.find((chain: any) => chain.name === "Avalanche");
 const MINT_VALUE = ethers.utils.parseEther("10");
 const TRANSFER_VALUE = ethers.utils.parseEther("5");

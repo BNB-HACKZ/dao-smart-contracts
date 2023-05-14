@@ -20,13 +20,13 @@ let targetSecondsPerBlockObj = require("../config/targetSecondsPerBlock.json");
 
 //let moonBeamSatelliteAddr 
 
-const spokeChainNames = ["Moonbeam", "Avalanche"];
+const spokeChainNames = ["Avalanche", "Polygon"];
 const daoSatellite = require("../artifacts/contracts/DAOSatellite.sol/DAOSatellite.json");
 const ExampleProxy = require("../artifacts/contracts/ExampleProxy.sol/ExampleProxy.json");
 
 let chainsInfo: any = [];
 
-let hubChain = "Moonbeam";
+let hubChain = "Binance";
 
 let governanceTokenAddr = "0x63C69067938eB808187c8cCdd12D5Bcf0375b2Ac";
 let satelliteAddr = "0x84c6a8009e1be1e3F43e9Db53Aa673f851bFb4A8";

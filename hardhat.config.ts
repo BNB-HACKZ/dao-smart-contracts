@@ -40,7 +40,7 @@ const config: HardhatUserConfig = {
       evmVersion: process.env.EVM_VERSION || 'london',
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 300,
         details: {
           peephole: true,
           inliner: true,

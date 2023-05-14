@@ -21,7 +21,7 @@ const moonBeamDAOAddr = "0xA06AebAb1396ddBA55703341164BD5eeD2530A25"
 
 //const spokeChainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const spokeChainNames = ["Moonbeam", "Avalanche"];
+const spokeChainNames = ["Binance", "Avalanche"];
 const spokeChainIds:any = [];
 
 function getChainIds(chains: any){
@@ -37,7 +37,7 @@ function getChainIds(chains: any){
 
 export async function main() {
      getChainIds(chains);
-     await crossChainDAODeploy("Moonbeam", wallet, GovernanceTokenAddr);
+     await crossChainDAODeploy("Binance", wallet, GovernanceTokenAddr);
      //await interact("Moonbeam", wallet, moonBeamDAOAddr);
  
 }

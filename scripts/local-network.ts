@@ -26,7 +26,7 @@ export const main = async () => {
 
   await createAndExport({
     accountsToFund: [wallet.address],
-    chains: ["Moonbeam", "Avalanche"],
+    chains: ["Binance", "Polygon", "Avalanche"],
     chainOutputPath: "config/local.json",
     async callback(network: Network) {
       await network.deployToken("USDC", "aUSDC", 6, BigInt(100_000_000e6));
