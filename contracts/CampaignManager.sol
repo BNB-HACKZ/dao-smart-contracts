@@ -30,8 +30,8 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
     constructor(
         address _gateway,
         address _gasService,
-        uint32[] memory _spokeChains,
-        string[] memory _spokeChainNames
+        bytes memory _spokeChains,
+        bytes memory _spokeChainNames
     ) AxelarExecutable(_gateway)  CampaignCountingSimple(_spokeChains, _spokeChainNames){
         gasService = IAxelarGasService(_gasService);
     }

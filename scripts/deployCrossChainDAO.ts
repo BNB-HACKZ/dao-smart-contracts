@@ -69,12 +69,6 @@ async function crossChainDAODeploy(hubChain: any, wallet: any, governanceToken: 
     const provider = getDefaultProvider(chain.rpc);
     const connectedWallet = wallet.connect(provider);
 
-    // console.log( governanceToken,
-    //     chain.gateway,
-    //     chain.gasService,
-    //     encodedSpokeChainIds,
-    //     encodedSpokeChainNames)
-
     const crossChainDAOFactory = new CrossChainDAO__factory(connectedWallet);
     const contract: CrossChainDAO = await crossChainDAOFactory.deploy(
         governanceToken,
