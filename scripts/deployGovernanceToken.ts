@@ -29,7 +29,7 @@ let chains = isTestnet ? require("../config/testnet.json") : require("../config/
 // get chains
 //const chainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const chainNames2 = ["Polygon", "Avalanche"];
+const chainNames2 = [ "Binance", "Avalanche", "Polygon"];
 
 const chainsInfo: any = [];
 
@@ -108,7 +108,7 @@ async function execute(chains: any, wallet: any, options: any) {
 
 async function main() {
     //let cnIndex = 0;
-    const promises = [];
+    //const promises = [];
 
     for(let i = 0; i < chainNames2.length; i++) {
         let chainName  = chainNames2[i];
@@ -126,7 +126,7 @@ async function main() {
     }
 
     // const result = await Promise.all(promises);
-    // return result;
+    //  return result;
 
     // Promise.all(promises).then((values) => {
     //     return values;

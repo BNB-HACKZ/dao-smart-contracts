@@ -34,10 +34,13 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
 
 // Hint: replace the array with a mapping.
 
-    constructor(uint16[] memory _spokeChains, string[] memory _spokeChainNames) {
+    constructor(bytes memory _spokeChainsIdData, bytes memory _spokeChainNamesData) {
+        uint16[] memory _spokeChains = abi.decode(_spokeChainsIdData, (uint16[]));
+        string[] memory _spokeChainNames =  abi.decode(_spokeChainNamesData, (string[]));
+        setSpokeChainData(_spokeChains, _spokeChainNames);
         spokeChains = _spokeChains;
         spokeChainNames = _spokeChainNames;
-        setSpokeChainData(_spokeChains, _spokeChainNames);
+
     }
 
     struct spokeChainData {

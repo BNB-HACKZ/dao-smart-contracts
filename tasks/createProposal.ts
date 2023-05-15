@@ -8,7 +8,7 @@ import { isTestnet, wallet } from "../config/constants";
 
 const {defaultAbiCoder} = utils;
 
-
+const satelliteAddr: any = "";
 
 let chains = isTestnet ? require("../config/testnet.json") : require("../config/local.json");
 
@@ -17,10 +17,10 @@ const moonBeamDAOAddr = "0x1dDabA87ec15241eEAC057FBC37C5F00CeBCEd34"
 
 //const spokeChainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const spokeChainNames = ["Moonbeam", "Avalanche"];
+const spokeChainNames = ["Polygon", "Avalanche"];
 const spokeChainIds:any = [];ethers
 
-let hubChain = 'Moonbeam';
+let hubChain = 'Binance';
 
 const chain = chains.find((chain: any) => chain.name === hubChain);
 const provider = getDefaultProvider(chain.rpc);
@@ -58,10 +58,11 @@ async function createProposal(description: string) {
 
     console.log('creatingProposal...')
 
-    const result = await (await crossChainDAOInstance.crossChainPropose(targets, values, callDatas, description, { value: "10000000000000000" })).wait();
+    const result = await (await crossChainDAOInstance.crossChainPropose(targets, values, callDatas, description, satelliteAddr, { value: "10000000000000000" })).wait();
     const proposalCreatedEvents = result.events?.filter((event: any) => event.event === 'ProposalCreated'); 
 
 if (proposalCreatedEvents && proposalCreatedEvents.length > 0) {
+  // @ts-ignore
   const proposalId = proposalCreatedEvents[0].args.proposalId; 
   
 

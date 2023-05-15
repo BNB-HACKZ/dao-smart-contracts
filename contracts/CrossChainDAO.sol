@@ -68,8 +68,8 @@ contract CrossChainDAO is
         IVotes _token,
         address _gateway,
         address _gasService,
-        uint16[] memory _spokeChains,
-        string[] memory _spokeChainNames
+        bytes memory _spokeChains,
+        bytes memory _spokeChainNames
     )
         Governor("CrossChainDAO")
         GovernorSettings(0 /* 0 block */, 30 /* 6 minutes */, 0)
