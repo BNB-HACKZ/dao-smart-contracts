@@ -16,15 +16,19 @@ const {utils: {
 
 let chains = isTestnet ? require("../config/testnet.json") : require("../config/local.json");
 
-let GovernanceTokenAddr = "0x63C69067938eB808187c8cCdd12D5Bcf0375b2Ac";
-const moonBeamDAOAddr = "0xA06AebAb1396ddBA55703341164BD5eeD2530A25"
+let GovernanceTokenAddr = "0xF3701c7dAAa71f3622a47e49Cc0C1Dfae8C6Ce4c";
+const BinanceDAOAddr = "0x558388D8Ebcf227D6cF1C1b8345754259800CA3F"
 
 //const spokeChainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const spokeChainNames = ["Polygon", "Avalanche"];
+const spokeChainNames = [ "Polygon", "Avalanche"];
 const spokeChainIds:any = [];
 
-const satellitedAddr: any = "";
+const HubChain = "Binance";
+//const satellitedAddr: any = "";
+
+let encodedSpokeChainIds: any;
+let encodedSpokeChainNames: any;
 
 function getChainIds(chains: any){
     for(let i = 0; i < spokeChainNames.length; i++) {
@@ -33,18 +37,32 @@ function getChainIds(chains: any){
         chains.find((chain: any) => {
             if(chain.name === chainName){
                spokeChainIds.push(chain.chainId); 
+        
         }});    
     }
 }
 
+
 export async function main() {
      getChainIds(chains);
-     await crossChainDAODeploy("Binance", wallet, GovernanceTokenAddr);
-     //await interact("Moonbeam", wallet, moonBeamDAOAddr);
+     console.log(spokeChainIds)
+     encodedSpokeChainIds = ethers.utils.defaultAbiCoder.encode(
+        ["uint32[]"],
+        [spokeChainIds]
+      );
+     encodedSpokeChainNames = ethers.utils.defaultAbiCoder.encode(
+        ["string[]"],
+        [spokeChainNames]
+      );
+
+   
+    await crossChainDAODeploy(HubChain, wallet, GovernanceTokenAddr);
+    //await interact("Moonbeam", wallet, BinanceDAOAddr);
+ 
  
 }
 
-async function crossChainDAODeploy(hubChain: string, wallet: any, governanceToken: any) {
+async function crossChainDAODeploy(hubChain: any, wallet: any, governanceToken: string) {
     const chain = chains.find((chain: any) => chain.name === hubChain);
 
     console.log(`Deploying CrossChainDAO for ${chain.name}.`);
@@ -56,8 +74,8 @@ async function crossChainDAODeploy(hubChain: string, wallet: any, governanceToke
         governanceToken,
         chain.gateway,
         chain.gasReceiver,
-        spokeChainIds,
-        spokeChainNames
+        encodedSpokeChainIds,
+        encodedSpokeChainNames
     );
     const deployTxReceipt = await contract.deployTransaction.wait();
     console.log(`Cross chain DAO has been deployed at ${contract.address}`);
@@ -71,7 +89,7 @@ async function interact(hubChain: string, wallet: any, daoAddr: string) {
     const crossChainDAOFactory =  new CrossChainDAO__factory(connectedWallet);
     const crossChainDAOInstance = crossChainDAOFactory.attach(daoAddr);
 
-    const result = await crossChainDAOInstance.gasService();
+    const result = await crossChainDAOInstance.spokeChainNames(1);
     //const result2 = await governanceTokenInstance.spokeChainNames(0);
     console.log(result);
    

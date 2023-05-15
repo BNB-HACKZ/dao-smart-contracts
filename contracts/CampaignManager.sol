@@ -30,8 +30,8 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
     constructor(
         address _gateway,
         address _gasService,
-        uint16[] memory _spokeChains,
-        string[] memory _spokeChainNames
+        bytes memory _spokeChains,
+        bytes memory _spokeChainNames
     ) AxelarExecutable(_gateway)  CampaignCountingSimple(_spokeChains, _spokeChainNames){
         gasService = IAxelarGasService(_gasService);
     }
@@ -209,7 +209,7 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
         // _payload parameter and assigns it to the option variable. The assumption
         // here is that the _payload parameter points to a location in memory where a uint16
         // v(alue has been previously encoded.
-        uint16 _srcChainId = spokeChainNameToSpokeChainId[sourceChain];
+        uint32 _srcChainId = spokeChainNameToSpokeChainId[sourceChain];
         uint16 option;
         assembly {
             option := mload(add(_payload, 32))
@@ -234,7 +234,7 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
     
 
     function onReceiveSpokeDonationData(
-        uint16 _srcChainId,
+        uint32 _srcChainId,
         bytes memory payload
     ) internal virtual {
           ( ,
