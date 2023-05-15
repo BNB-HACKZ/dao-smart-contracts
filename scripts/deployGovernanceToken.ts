@@ -29,12 +29,14 @@ let chains = isTestnet ? require("../config/testnet.json") : require("../config/
 // get chains
 //const chainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const chainNames2 = [ "Binance", "Avalanche", "Polygon"];
+const chainNames2 = [ "Binance", "Avalanche", "Fantom"];
 
 const chainsInfo: any = [];
 
 const moonBeamAddr = "0x63C69067938eB808187c8cCdd12D5Bcf0375b2Ac";
 const AvalancheAddr = "0x63C69067938eB808187c8cCdd12D5Bcf0375b2Ac";
+
+//0x4bd18F0f4226B8d7E4c321466B5B4DCe3e31ce31 most recent deployed address
 
 
 async function deploy(chain:any, wallet: any) {

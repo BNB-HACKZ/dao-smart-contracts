@@ -191,7 +191,7 @@ contract CrossChainDAO is
         // _payload parameter and assigns it to the option variable. The assumption
         // here is that the _payload parameter points to a location in memory where a uint16
         // v(alue has been previously encoded.
-        uint16 _srcChainId = spokeChainNameToChainId[sourceChain];
+        uint32 _srcChainId = spokeChainNameToChainId[sourceChain];
         uint16 option;
         assembly {
             option := mload(add(_payload, 32))
@@ -212,7 +212,7 @@ contract CrossChainDAO is
     //if you are implementing _execute from the governor contract remember to override it as well
     //we want to know for which proposal the data received is for, and initialize it to true that it has been received
     function onReceiveSpokeVotingData(
-        uint16 _srcChainId,
+        uint32 _srcChainId,
         bytes memory payload
     ) internal virtual {
         (

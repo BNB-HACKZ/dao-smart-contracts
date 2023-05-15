@@ -23,7 +23,7 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
 
     // The spokechain IDs that the DAO expects to receive data from during the 
     // collection phase
-    uint16[] public spokeChains;
+    uint32[] public spokeChains;
     string[] public spokeChainNames;
 
     //Challenge
@@ -35,7 +35,7 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
 // Hint: replace the array with a mapping.
 
     constructor(bytes memory _spokeChainsIdData, bytes memory _spokeChainNamesData) {
-        uint16[] memory _spokeChains = abi.decode(_spokeChainsIdData, (uint16[]));
+        uint32[] memory _spokeChains = abi.decode(_spokeChainsIdData, (uint32[]));
         string[] memory _spokeChainNames =  abi.decode(_spokeChainNamesData, (string[]));
         setSpokeChainData(_spokeChains, _spokeChainNames);
         spokeChains = _spokeChains;
@@ -44,7 +44,7 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
     }
 
     struct spokeChainData {
-        uint16 spokeChainId;
+        uint32 spokeChainId;
         string spokeChainName;
     }
 
@@ -65,11 +65,11 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
         mapping(address => bool) hasVoted;
     }
 
-    mapping(string => uint16) public spokeChainNameToChainId;
+    mapping(string => uint32) public spokeChainNameToChainId;
     
 
     // Maps a proposal ID to a map of a chain ID to summarized spoke voting data
-    mapping(uint256 => mapping(uint16 => SpokeProposalVote)) public proposalIdToChainIdToSpokeVotes;
+    mapping(uint256 => mapping(uint32 => SpokeProposalVote)) public proposalIdToChainIdToSpokeVotes;
     // ...
 
     mapping(uint256 => ProposalVote) private _proposalVotes;
@@ -91,7 +91,7 @@ abstract contract CrossChainGovernorCountingSimple is Governor {
      * @dev See {IGovernor-hasVoted}.
      */
 
-    function setSpokeChainData(uint16[] memory _spokeChains, string[] memory _spokeChainNames) internal {
+    function setSpokeChainData(uint32[] memory _spokeChains, string[] memory _spokeChainNames) internal {
         require(_spokeChains.length == _spokeChainNames.length, "not equal lengths");
         for(uint16 i = 0; i < _spokeChains.length; i++) {
             spokeChainNameToChainId[_spokeChainNames[i]] = _spokeChains[i];

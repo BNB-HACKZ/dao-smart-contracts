@@ -16,12 +16,12 @@ const {utils: {
 
 let chains = isTestnet ? require("../config/testnet.json") : require("../config/local.json");
 
-let GovernanceTokenAddr = "0x63092CB8640C8F3B221871bc0E21b7364799097D";
-const moonBeamDAOAddr = "0xA06AebAb1396ddBA55703341164BD5eeD2530A25"
+let GovernanceTokenAddr = "0xF3701c7dAAa71f3622a47e49Cc0C1Dfae8C6Ce4c";
+const BinanceDAOAddr = "0x558388D8Ebcf227D6cF1C1b8345754259800CA3F"
 
 //const spokeChainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const spokeChainNames = [ "Avalanche", "Polygon"];
+const spokeChainNames = [ "Polygon", "Avalanche"];
 const spokeChainIds:any = [];
 
 const HubChain = "Binance";
@@ -45,8 +45,9 @@ function getChainIds(chains: any){
 
 export async function main() {
      getChainIds(chains);
+     console.log(spokeChainIds)
      encodedSpokeChainIds = ethers.utils.defaultAbiCoder.encode(
-        ["uint16[]"],
+        ["uint32[]"],
         [spokeChainIds]
       );
      encodedSpokeChainNames = ethers.utils.defaultAbiCoder.encode(
@@ -54,8 +55,9 @@ export async function main() {
         [spokeChainNames]
       );
 
+   
     await crossChainDAODeploy(HubChain, wallet, GovernanceTokenAddr);
-    //await interact("Moonbeam", wallet, moonBeamDAOAddr);
+    //await interact("Moonbeam", wallet, BinanceDAOAddr);
  
  
 }

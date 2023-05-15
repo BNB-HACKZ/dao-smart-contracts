@@ -10,17 +10,17 @@ abstract contract CampaignCountingSimple {
 
     // The spokechain IDs that the Campaign manager expects to receive data from during the 
     // collection phase
-    uint16[] public spokeChains;
+    uint32[] public spokeChains;
     string[] public spokeChainNames;
 
-    constructor(uint16[] memory _spokeChains, string[] memory _spokeChainNames) {
+    constructor(uint32[] memory _spokeChains, string[] memory _spokeChainNames) {
         spokeChains = _spokeChains;
         spokeChainNames = _spokeChainNames;
         setSpokeChainData(_spokeChains, _spokeChainNames);
     }
 
     struct spokeChainData {
-        uint16 spokeChainId;
+        uint32 spokeChainId;
         string spokeChainName;
     }
 
@@ -43,22 +43,16 @@ abstract contract CampaignCountingSimple {
         address[] donators;
     }
     
-    mapping(string => uint16) public spokeChainNameToSpokeChainId;
+    mapping(string => uint32) public spokeChainNameToSpokeChainId;
 
     // Maps a proposal ID to a map of a chain ID to summarized spoke voting data
-    mapping(uint256 => mapping(uint16 => SpokeCampaignData)) public campaignIdToChainIdToSpokeCampaignData;
+    mapping(uint256 => mapping(uint32 => SpokeCampaignData)) public campaignIdToChainIdToSpokeCampaignData;
     // ...
     
     mapping(uint256 => CampaignData) private _campaignData;
 
-    // struct SpokeDonationDetails {
-    //     uint256 forVotes;
-    //     uint256 againstVotes;
-    //     uint256 abstainVotes;
-    //     bool initialized; //This checks whether data was received from the spoke chains or not
-    // }
 
-     function setSpokeChainData(uint16[] memory _spokeChains, string[] memory _spokeChainNames) internal {
+     function setSpokeChainData(uint32[] memory _spokeChains, string[] memory _spokeChainNames) internal {
         require(_spokeChains.length == _spokeChainNames.length, "not equal lengths");
         for(uint16 i = 0; i < _spokeChains.length; i++) {
             spokeChainNameToSpokeChainId[_spokeChainNames[i]] = _spokeChains[i];

@@ -1,4 +1,4 @@
-import { utils, constants, BigNumber, getDefaultProvider, Contract} from 'ethers';
+import { utils, constants, BigNumber, getDefaultProvider, Contract } from 'ethers';
 import { ethers } from "hardhat";
 //import { ethers } from "ethers";
 
@@ -7,12 +7,12 @@ import { CrossChainDAO, CrossChainDAO__factory, DAOSatellite__factory, Governanc
 import { parseEther } from "ethers/lib/utils";
 import { isTestnet, wallet } from "../config/constants";
 
-const {defaultAbiCoder} = utils;
+const { defaultAbiCoder } = utils;
 
 const { deployUpgradable } = require("@axelar-network/axelar-gmp-sdk-solidity");
-const {utils: {
-  deployContract
-}} = require("@axelar-network/axelar-local-dev");
+const { utils: {
+    deployContract
+} } = require("@axelar-network/axelar-local-dev");
 
 let chains = isTestnet ? require("../config/testnet.json") : require("../config/local.json");
 
@@ -28,13 +28,13 @@ let chainsInfo: any = [];
 
 let hubChain = "Binance";
 
-let governanceTokenAddr = "0x63C69067938eB808187c8cCdd12D5Bcf0375b2Ac";
-let satelliteAddr = "0x84c6a8009e1be1e3F43e9Db53Aa673f851bFb4A8";
+let governanceTokenAddr = "0xF3701c7dAAa71f3622a47e49Cc0C1Dfae8C6Ce4c";
+let satelliteAddr = "0xd2f449C10c16C4395f00adE7287f29db2fedeA45";
 
 //let spokeChain = "Moonbeam";
 
 
-async function deploy(_hubChain: string, chain:any, wallet: any, governanceToken: string, targetSecondsPerBlock: number) {
+async function deploy(_hubChain: string, chain: any, wallet: any, governanceToken: string, targetSecondsPerBlock: number) {
     console.log(`Deploying Satellite for ${chain.name}.`);
     const provider = getDefaultProvider(chain.rpc);
     const connectedWallet = wallet.connect(provider);
@@ -56,27 +56,28 @@ async function deploy(_hubChain: string, chain:any, wallet: any, governanceToken
 let targetSecond: any;
 async function main() {
     const promises = [];
-   
-    for(let i = 0; i < spokeChainNames.length; i++) {
-        
-        let chainName  = spokeChainNames[i];
-    
+
+    for (let i = 0; i < spokeChainNames.length; i++) {
+
+        let chainName = spokeChainNames[i];
+
         let chainInfo = chains.find((chain: any) => {
-            if(chain.name === chainName){
-               chainsInfo.push(chain); 
-               return chain;
-        }});
-    
-    for(const property in targetSecondsPerBlockObj) {
-            if(chainName === property){
+            if (chain.name === chainName) {
+                chainsInfo.push(chain);
+                return chain;
+            }
+        });
+
+        for (const property in targetSecondsPerBlockObj) {
+            if (chainName === property) {
                 targetSecond = targetSecondsPerBlockObj[property]
             }
-   }   
+        }
 
         console.log(`Deploying [${chainName}]`);
 
         await deploy(hubChain, chainInfo, wallet, governanceTokenAddr, targetSecond);
-        
+
     }
 
     //await interact(spokeChain, wallet, satelliteAddr)
@@ -88,18 +89,18 @@ async function interact(_spokeChain: string, wallet: any, satelliteAddr: string)
     const provider = getDefaultProvider(chain.rpc);
     const connectedWallet = wallet.connect(provider);
 
-    const daoSatelliteFactory =  new DAOSatellite__factory(connectedWallet);
+    const daoSatelliteFactory = new DAOSatellite__factory(connectedWallet);
     const daoSatelliteInstance = daoSatelliteFactory.attach(satelliteAddr);
 
     const result = await daoSatelliteInstance.targetSecondsPerBlock();
     console.log(`The targetsecondsPerblock for spokechain ${_spokeChain} is ${result}`)
     //const result2 = await governanceTokenInstance.spokeChainNames(0);
     //console.log(result);
-   
+
 }
 
 
 main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
-  });
+});
