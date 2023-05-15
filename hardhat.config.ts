@@ -40,7 +40,7 @@ const config: HardhatUserConfig = {
       evmVersion: process.env.EVM_VERSION || 'london',
       optimizer: {
         enabled: true,
-        runs: 300,
+        runs: 1000,
         details: {
           peephole: true,
           inliner: true,
@@ -56,7 +56,11 @@ const config: HardhatUserConfig = {
         },
       },
     },
+   
   },
+  typechain: {
+    target: "ethers-v5"
+  }
 };
 
 export default config;
