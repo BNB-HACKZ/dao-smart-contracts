@@ -231,6 +231,12 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
     function enableWithdrawal() public {
 
     }
+
+    function crossChainDonate(uint256 _campaignId, uint256 _amount, address payable _depositAddress) public virtual payable{
+        require(address(idToCampaigns[_campaignId]) != address(0), "not a valid campaign");
+        require(msg.value > _amount, "sent amount is lower than amount you want to donate");
+        _depositAddress.transfer(msg.value);
+    }
     
 
     function onReceiveSpokeDonationData(

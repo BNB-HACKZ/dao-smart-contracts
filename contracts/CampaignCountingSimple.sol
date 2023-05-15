@@ -60,7 +60,7 @@ abstract contract CampaignCountingSimple {
         public campaignIdToChainIdToSpokeCampaignData;
     // ...
 
-    mapping(uint256 => CampaignData) private _campaignData;
+    mapping(uint256 => CampaignData) public _campaignData;
 
     function setSpokeChainData(
         uint32[] memory _spokeChains,
