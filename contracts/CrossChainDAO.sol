@@ -60,7 +60,7 @@ contract CrossChainDAO is
     // Whether or not the DAO finished the collection phase. It would be more efficient to add Collection as a status
     // in the Governor interface, but that would require editing the source file. It is a bit out of scope to completely
     // refactor the OpenZeppelin governance contract just for cross-chain action!
-    
+
     mapping(uint256 => bool) public collectionFinished;
     mapping(uint256 => bool) public collectionStarted;
 
@@ -76,7 +76,6 @@ contract CrossChainDAO is
         GovernorVotes(_token)
         AxelarExecutable(_gateway)
         CrossChainGovernorCountingSimple(_spokeChains, _spokeChainNames)
-        
     {
         gasService = IAxelarGasService(_gasService);
     }
@@ -143,7 +142,11 @@ contract CrossChainDAO is
     //the collection phase. The message contains a function selector, 1, and a proposal ID. The function selector is used to
     //request voting data for the given proposal instead of some other action from the destination DAOSatellite contract.
 
-    function requestCollections(uint256 _proposalId, address _satelliteAddr) public payable {
+    //option = 1
+    function requestCollections(
+        uint256 _proposalId,
+        address _satelliteAddr
+    ) public payable {
         require(
             block.number > proposalDeadline(_proposalId),
             "Cannot request for vote collection until after the vote period is over!"
@@ -256,6 +259,7 @@ contract CrossChainDAO is
     //Then we'll modify it to send cross-chain messages with information on the proposal to every spoke chain,
     // the IDs of which is being stored in the CrossChainGovernorCountingSimple contract
 
+    //option = 0
     function crossChainPropose(
         address[] memory targets,
         uint256[] memory values,
@@ -288,7 +292,7 @@ contract CrossChainDAO is
                     address(this), //sender
                     spokeChainNames[i], //destination chain
                     //address(this).toString(), //destination contract address, would be same address with address(this) since we are using constant address deployer
-                     _satelliteAddr.toString(),
+                    _satelliteAddr.toString(),
                     payload,
                     msg.sender //refund address //payable(address(this)) //test this later to see the one that is necessary to suit your needs
                 );

@@ -31,38 +31,19 @@ const chain = chains.find((chain: any) => chain.name === hubChain);
 const provider = getDefaultProvider(chain.rpc);
 const connectedWallet = wallet.connect(provider);
 
-
-
-
-
 export async function main() {
-    
-
     await delegateVote();
-    
-   
- 
 }
 
-
-
 async function delegateVote() {
-
-    
-
-
-
     
     const governanceToken =  new GovernanceToken__factory(connectedWallet);
     const token = governanceToken.attach(GovernanceTokenAddr);
 
-    
     console.log('checking voting power and balance....\n ***************')
     const votePower_1 = await token.getVotes(connectedWallet.address);
     console.log(`Voting Power for account: ${connectedWallet.address}: ${ethers.utils.formatEther(votePower_1)} units`)
     
-    
-
     console.log('Delegating Votes...')
 
     const result = await (await token.delegate(connectedWallet.address)).wait();
@@ -72,8 +53,6 @@ async function delegateVote() {
     const votePower_2 = await token.getVotes(connectedWallet.address);
     console.log(`Voting Power for account: ${connectedWallet.address}: ${ethers.utils.formatEther(votePower_2)} units`)
     
-
-   
 }
 
 main().catch((error) => {

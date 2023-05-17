@@ -86,6 +86,10 @@ contract DAOSatellite is AxelarExecutable, Upgradable {
         chainName = chainName_;
     }
 
+    function hasVoted(uint256 proposalId, address account) public view virtual returns (bool) {
+        return proposalVotes[proposalId].hasVoted[account];
+    }
+
     function contractId() external pure returns (bytes32) {
         return keccak256("example");
     }

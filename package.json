@@ -28,6 +28,7 @@
     "typescript": ">=4.5.0"
   },
   "dependencies": {
+    "@0xsquid/sdk": "^1.4.2-beta.0",
     "@axelar-network/axelar-gmp-sdk-solidity": "^3.3.0",
     "@axelar-network/axelarjs-sdk": "^0.12.6",
     "@axelar-network/token-linker": "^1.0.0",

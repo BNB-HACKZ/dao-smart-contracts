@@ -32,7 +32,10 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
         address _gasService,
         bytes memory _spokeChains,
         bytes memory _spokeChainNames
-    ) AxelarExecutable(_gateway)  CampaignCountingSimple(_spokeChains, _spokeChainNames){
+    )
+        AxelarExecutable(_gateway)
+        CampaignCountingSimple(_spokeChains, _spokeChainNames)
+    {
         gasService = IAxelarGasService(_gasService);
     }
 
@@ -139,10 +142,10 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
 
     // function that checks whether or not that each of the spoke chains have sent in donation data before
     // allowing a withdrawal (which is found by checking completed on a campaign on all chains)
-   
+
     // function _beforeWithdrawal(uint256 _campaignId) public {
     //     finishCollectionPhase(_campaignId);
-        
+
     //     require(
     //         collectionFinished[_campaignId],
     //         "Collection phase for this proposal is unfinished!"
@@ -154,27 +157,31 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
     //function that marks a collection phase as true if all of the spoke chains have
     //sent a cross-chain message back
     function finishCollectionPhase(uint256 _campaignId) public {
-           bool phaseFinished = true;
+        bool phaseFinished = true;
         //loop will only run as long as phaseFinished == true
         for (uint16 i = 0; i < spokeChains.length && phaseFinished; i++) {
             phaseFinished =
                 phaseFinished &&
-                campaignIdToChainIdToSpokeCampaignData[_campaignId][spokeChains[i]]
-                    .initialized;
+                campaignIdToChainIdToSpokeCampaignData[_campaignId][
+                    spokeChains[i]
+                ].initialized;
         }
 
         collectionFinished[_campaignId] = phaseFinished; //this sets the collection of the proposalId on all chains as finished
     }
 
-    function requestCollections(uint256 _campaignId, address _satelliteAddr) public payable {
-          require(
+    function requestCollections(
+        uint256 _campaignId,
+        address _satelliteAddr
+    ) public payable {
+        require(
             !collectionStarted[_campaignId],
             "Collection phase for this proposal has already started"
         );
 
         collectionStarted[_campaignId] = true;
 
-          //sends an empty message to each of the aggregators. If they receive a
+        //sends an empty message to each of the aggregators. If they receive a
         // message at all, it is their cue to send data back
         uint256 crossChainFee = msg.value / spokeChains.length;
         for (uint16 i = 0; i < spokeChains.length; i++) {
@@ -192,7 +199,7 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
             gateway.callContract(
                 spokeChainNames[i],
                 //address(this).toString(),
-                  _satelliteAddr.toString(),
+                _satelliteAddr.toString(),
                 payload
             );
         }
@@ -202,7 +209,7 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
         string calldata sourceChain,
         string calldata /*sourceAddress*/,
         bytes memory _payload
-    ) internal override /*(AxelarExecutable)*/  {
+    ) internal override /*(AxelarExecutable)*/ {
         // Gets a function selector option
 
         //The code below loads a uint16 value from the memory location specified by the
@@ -228,23 +235,40 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
         //string memory message = abi.decode(_payload, (string));
     }
 
-    function enableWithdrawal() public {
+    function enableWithdrawal() public {}
 
+    function crossChainDonate(
+        uint256 _campaignId,
+        uint256 _amount,
+        address payable _recipient
+    ) public payable virtual {
+        require(
+            address(idToCampaigns[_campaignId]) != address(0),
+            "not a valid campaign"
+        );
+        require(
+            msg.value > _amount,
+            "sent amount is lower than amount you want to donate"
+        );
+        _recipient.transfer(msg.value);
     }
-    
 
     function onReceiveSpokeDonationData(
         uint32 _srcChainId,
         bytes memory payload
     ) internal virtual {
-          ( ,
-        //uint16 option
-        uint256  campaignId,
-        address campaignOwner,
-        uint256 raisedFunds,
-        bool hasReachedTarget,
-        address[] memory donators
-        ) = abi.decode(payload, (uint16, uint256, address, uint256, bool, address[]));
+        (
+            ,
+            //uint16 option
+            uint256 campaignId,
+            address campaignOwner,
+            uint256 raisedFunds,
+            bool hasReachedTarget,
+            address[] memory donators
+        ) = abi.decode(
+                payload,
+                (uint16, uint256, address, uint256, bool, address[])
+            );
 
         //as long as the received data isn't already initialized.._execute
         if (
@@ -252,14 +276,19 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
                 .initialized
         ) {
             revert("Already initialized");
-
-         } else {
+        } else {
             //Add it to the map (while setting initialized to true)
             campaignIdToChainIdToSpokeCampaignData[campaignId][
                 _srcChainId
-            ] = SpokeCampaignData(campaignOwner, campaignId, raisedFunds, hasReachedTarget, donators, true);
+            ] = SpokeCampaignData(
+                campaignOwner,
+                campaignId,
+                raisedFunds,
+                hasReachedTarget,
+                donators,
+                true
+            );
         }
-
     }
 
     // function getCampaignDetails() public view returns(string[] memory)

@@ -1,9 +1,7 @@
 import { utils, constants, BigNumber, getDefaultProvider} from 'ethers';
 import { ethers } from "ethers";
 import fs from "fs/promises";
-
 const {defaultAbiCoder} = utils;
-
   const { deployUpgradable } = require("@axelar-network/axelar-gmp-sdk-solidity");
   const {utils: {
     deployContract
@@ -29,7 +27,7 @@ let chains = isTestnet ? require("../config/testnet.json") : require("../config/
 // get chains
 //const chainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const chainNames2 = [ "Binance", "Avalanche", "Fantom"];
+const chainNames2 = [ "Binance", "Avalanche", "Polygon"];
 
 const chainsInfo: any = [];
 

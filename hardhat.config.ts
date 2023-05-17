@@ -34,6 +34,7 @@ import 'solidity-coverage';
 
 const config: HardhatUserConfig = {
   // solidity: "0.8.0",
+  paths: { tests: "tests" },
   solidity: {
     version: '0.8.9',
     settings: {
@@ -55,8 +56,9 @@ const config: HardhatUserConfig = {
           },
         },
       },
+
     },
-   
+
   },
   typechain: {
     target: "ethers-v5"

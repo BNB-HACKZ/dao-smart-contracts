@@ -1,4 +1,4 @@
-import { utils, constants, BigNumber, getDefaultProvider} from 'ethers';
+import { utils, constants, BigNumber, getDefaultProvider } from 'ethers';
 import { ethers } from "hardhat";
 //import { ethers } from "ethers";
 
@@ -7,12 +7,12 @@ import { CrossChainDAO, CrossChainDAO__factory, GovernanceToken, GovernanceToken
 import { parseEther } from "ethers/lib/utils";
 import { isTestnet, wallet } from "../config/constants";
 
-const {defaultAbiCoder} = utils;
+const { defaultAbiCoder } = utils;
 
 const { deployUpgradable } = require("@axelar-network/axelar-gmp-sdk-solidity");
-const {utils: {
-  deployContract
-}} = require("@axelar-network/axelar-local-dev");
+const { utils: {
+    deployContract
+} } = require("@axelar-network/axelar-local-dev");
 
 let chains = isTestnet ? require("../config/testnet.json") : require("../config/local.json");
 
@@ -21,8 +21,8 @@ const BinanceDAOAddr = "0x558388D8Ebcf227D6cF1C1b8345754259800CA3F"
 
 //const spokeChainNames = ["Moonbeam", "Avalanche", "Ethereum", "Fantom", "Polygon"];
 
-const spokeChainNames = [ "Polygon", "Avalanche"];
-const spokeChainIds:any = [];
+const spokeChainNames = ["Polygon", "Avalanche"];
+const spokeChainIds: any = [];
 
 const HubChain = "Binance";
 //const satellitedAddr: any = "";
@@ -30,36 +30,37 @@ const HubChain = "Binance";
 let encodedSpokeChainIds: any;
 let encodedSpokeChainNames: any;
 
-function getChainIds(chains: any){
-    for(let i = 0; i < spokeChainNames.length; i++) {
-        let chainName  = spokeChainNames[i];
+function getChainIds(chains: any) {
+    for (let i = 0; i < spokeChainNames.length; i++) {
+        let chainName = spokeChainNames[i];
         //let chainInfo = chainsInfo[i];
         chains.find((chain: any) => {
-            if(chain.name === chainName){
-               spokeChainIds.push(chain.chainId); 
-        
-        }});    
+            if (chain.name === chainName) {
+                spokeChainIds.push(chain.chainId);
+
+            }
+        });
     }
 }
 
 
 export async function main() {
-     getChainIds(chains);
-     console.log(spokeChainIds)
-     encodedSpokeChainIds = ethers.utils.defaultAbiCoder.encode(
+    getChainIds(chains);
+    console.log(spokeChainIds)
+    encodedSpokeChainIds = ethers.utils.defaultAbiCoder.encode(
         ["uint32[]"],
         [spokeChainIds]
-      );
-     encodedSpokeChainNames = ethers.utils.defaultAbiCoder.encode(
+    );
+    encodedSpokeChainNames = ethers.utils.defaultAbiCoder.encode(
         ["string[]"],
         [spokeChainNames]
-      );
+    );
 
-   
+
     await crossChainDAODeploy(HubChain, wallet, GovernanceTokenAddr);
     //await interact("Moonbeam", wallet, BinanceDAOAddr);
- 
- 
+
+
 }
 
 async function crossChainDAODeploy(hubChain: any, wallet: any, governanceToken: string) {
@@ -86,18 +87,17 @@ async function interact(hubChain: string, wallet: any, daoAddr: string) {
     const provider = getDefaultProvider(chain.rpc);
     const connectedWallet = wallet.connect(provider);
 
-    const crossChainDAOFactory =  new CrossChainDAO__factory(connectedWallet);
+    const crossChainDAOFactory = new CrossChainDAO__factory(connectedWallet);
     const crossChainDAOInstance = crossChainDAOFactory.attach(daoAddr);
 
     const result = await crossChainDAOInstance.spokeChainNames(1);
     //const result2 = await governanceTokenInstance.spokeChainNames(0);
     console.log(result);
-   
+
 }
 
 main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
-  });
+});
 
-  
