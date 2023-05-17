@@ -8,10 +8,11 @@ import {
     EvmChain,
     GasToken,
   } from "@axelar-network/axelarjs-sdk";
-import { getGasFee } from "../utils/getGasFee";
+//import { getGasFee } from "../utils/getGasFee";
 import { getEnabledCategories } from "trace_events";
 
 let chains = isTestnet ? require("../config/testnet.json") : require("../config/local.json");
+
 const getEnvironment = () => {
     let environment: Environment;
     isTestnet ? environment = Environment.TESTNET : environment = Environment.DEVNET;
@@ -31,15 +32,15 @@ export async function vote(_chain: string, wallet: any, satelliteAddr: string, p
     
     if(_chain == "Polygon" || _chain == "Avalanche") {
         const chain = chains.find((chain: any) => chain.name === _chain);    
-        const environment = getEnvironment();
-        const gasFee = await getGasFee(chain.name, hubChain, chain.tokenSymbol,environment);
+        //const environment = getEnvironment();
+        //const gasFee = await getGasFee(chain.name, hubChain, chain.tokenSymbol,environment);
         const provider = getDefaultProvider(chain.rpc);
         const connectedWallet = wallet.connect(provider);
 
         const daoSatelliteFactory = new DAOSatellite__factory(connectedWallet);
         const daoSatelliteInstance = daoSatelliteFactory.attach(DAOSatelliteAddress);
 
-        const tx = await daoSatelliteInstance.castVote(proposalId, support, {gasPrice: BigInt(gasFee)}, )
+        const tx = await daoSatelliteInstance.castVote(proposalId, support);
         const txReceipt = await tx.wait();
         console.log(`You are connected on satellite ${_chain} and you cast vote for proposal: ${proposalId} and support: ${support}`);
         console.log(`...tx: ${txReceipt.transactionHash}`);
