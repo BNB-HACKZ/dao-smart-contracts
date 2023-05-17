@@ -1,5 +1,5 @@
 {
-  "include": ["./scripts", "./tests", "./typechain-types"],
+  "include": ["./scripts", "./tests", "./typechain-types", "scripts/createCampaign.ts"],
   "files": ["./hardhat.config.ts"],
   "compilerOptions": {
     //"target": "es2020",

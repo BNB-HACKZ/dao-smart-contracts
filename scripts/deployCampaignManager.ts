@@ -24,8 +24,9 @@ const BinanceDAOAddr = "0x558388D8Ebcf227D6cF1C1b8345754259800CA3F"
 const spokeChainNames = ["Polygon", "Avalanche"];
 const spokeChainIds: any = [];
 
+
 const HubChain = "Binance";
-const campaignManagerAddr: any = "0xe8d3a73f6351f9f5dd6A577aD4ddF7d5C84DF5C8";
+const campaignManagerAddr: any = "0xb4439634ad988555F2a5EB3810ae589A353A2B77";
 
 let encodedSpokeChainIds: any;
 let encodedSpokeChainNames: any;
@@ -56,13 +57,13 @@ export async function main() {
         [spokeChainNames]
     );
 
-    await campiagnSatelliteDeploy(HubChain, wallet);
+    await campaignSatelliteDeploy(HubChain, wallet);
     //await interact(HubChain, wallet, BinanceDAOAddr);
 
 
 }
 
-async function campiagnSatelliteDeploy(hubChain: any, wallet: any) {
+async function campaignSatelliteDeploy(hubChain: any, wallet: any) {
     const chain = chains.find((chain: any) => chain.name === hubChain);
 
     console.log(`Deploying Campaign manager for ${chain.name}.`);

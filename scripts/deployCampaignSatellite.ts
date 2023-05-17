@@ -28,7 +28,7 @@ let chainsInfo: any = [];
 let hubChain = "Binance";
 
 let governanceTokenAddr = "0xF3701c7dAAa71f3622a47e49Cc0C1Dfae8C6Ce4c";
-let satelliteAddr = "";
+let campaignSatelliteAddr = "0x47A62Af19657263E3E0b60312f97F7464F70Ba35";
 
 //let spokeChain = "Moonbeam";
 

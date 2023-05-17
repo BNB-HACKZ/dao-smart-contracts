@@ -24,6 +24,8 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
 
     uint256[] public allCampaignIds;
 
+    event CampaignCreatedPayload(bytes);
+
     mapping(uint256 => bool) public collectionFinished;
     mapping(uint256 => bool) public collectionStarted;
 
@@ -72,6 +74,7 @@ contract CampaignManager is CampaignCountingSimple, AxelarExecutable {
                     abi.encode(campaignID, block.timestamp)
                 );
 
+                emit CampaignCreatedPayload(payload);
                 // Send a cross-chain message with axelar to the chain in the iterator
                 gasService.payNativeGasForContractCall{value: crossChainFee}(
                     address(this), //sender
