@@ -1,4 +1,4 @@
-# Sample Hardhat Project
+# Cross chain crowdfunding DAO
 
 ## Relevant contract addresses can be found here:
 
