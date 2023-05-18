@@ -1,16 +1,5 @@
 # Sample Hardhat Project
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```
 ## Relevant contract addresses can be found here:
 
 ### For DAO contracts
@@ -25,11 +14,14 @@ Polygon and Avalanche DAO satellite Addresses
 
 
 ### For Campaign contracts
-Campaign manager contract
+Campaign manager contract on Binance
 0xb4439634ad988555F2a5EB3810ae589A353A2B77
 
 Campaign Satellite for Avalanche and Polygon
 0x47A62Af19657263E3E0b60312f97F7464F70Ba35
+
+This project is a cross chain crowdfunding DAO, the DAO address and the campaign manager are the senders, they are on the hub chain, while the campaign satellite and DAO satellite addresses are the receivers, they are on the on the spoke chains, the hub sends messages to these satellites on these different chains and the messages are relayed back to the hub to facilitate the cross chain interoperability across chains
+
 
 
 
