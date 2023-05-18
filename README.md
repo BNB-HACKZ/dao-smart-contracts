@@ -11,9 +11,9 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.ts
 ```
-##Relevant contract addresses can be found here:
+## Relevant contract addresses can be found here:
 
-###For DAO contracts
+### For DAO contracts
 Governance Token Addresses for Polygon, Avalanche and Binance
 0xF3701c7dAAa71f3622a47e49Cc0C1Dfae8C6Ce4c
 
@@ -24,7 +24,7 @@ Polygon and Avalanche DAO satellite Addresses
 0xd2f449C10c16C4395f00adE7287f29db2fedeA45
 
 
-###For Campaign contracts
+### For Campaign contracts
 Campaign manager contract
 0xb4439634ad988555F2a5EB3810ae589A353A2B77
 
